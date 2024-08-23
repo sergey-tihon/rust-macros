@@ -20,6 +20,9 @@ struct Example {
     pub second: u32,
 }
 
+#[public]
+struct Example2(u32, String);
+
 fn main() {
     let ds = DeriveStruct {};
     ds.hello_world();
