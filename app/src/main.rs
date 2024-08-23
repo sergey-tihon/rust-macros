@@ -1,14 +1,7 @@
-// macro_rules! hello_world {
-//     ($something:ident) => {
-//         impl $something {
-//             fn hello_world(&self) {
-//                 println!("Hello world")
-//             }
-//        }
-//     };
-// }
+mod macro_rules;
 
-use proc_macro::{public, Hello, UpperName};
+use proc_macro_attr::public;
+use proc_macro_derive::{Hello, UpperName};
 
 #[derive(Hello)]
 struct DeriveStruct {}
