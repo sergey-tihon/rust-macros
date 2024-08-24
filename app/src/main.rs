@@ -1,6 +1,6 @@
 mod macro_rules;
 
-use proc_macro_attr::public;
+use proc_macro_attr::{public, public2};
 use proc_macro_derive::{Hello, UpperName};
 
 #[derive(Hello)]
@@ -14,7 +14,7 @@ enum Pet {
 #[derive(UpperName)]
 struct UpperStruct {}
 
-#[public]
+#[public2]
 struct Example {
     first: String,
     pub second: u32,
