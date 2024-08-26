@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 proc-macro-derive = { path = '../proc-macro-derive' }
 proc-macro-attr = { path = '../proc-macro-attr' }
+proc-macro = { path = '../proc-macro' }

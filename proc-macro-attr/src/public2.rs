@@ -31,7 +31,7 @@ impl Parse for StructFields {
                 ty: second.0,
             })
         } else {
-            eprintln!("{:#?}", first.0);
+            // eprintln!("{:#?}", first.0);
             Ok(StructFields {
                 name: None,
                 ty: first.0,
