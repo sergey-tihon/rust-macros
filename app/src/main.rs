@@ -1,5 +1,6 @@
 use proc_macro_derive::{Hello, UpperName};
 
+mod compose;
 mod macro_rules;
 mod private;
 mod public;
@@ -25,4 +26,6 @@ fn main() {
 
     let upp = UpperStruct {};
     upp.uppercase();
+
+    compose::main();
 }
