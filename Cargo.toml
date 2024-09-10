@@ -1,3 +1,10 @@
 [workspace]
 resolver = "2"
-members = ["app", "proc-macro", "proc-macro-attr", "proc-macro-derive"]
+members = [
+  "app",
+  "builder-code",
+  "builder-macro",
+  "proc-macro",
+  "proc-macro-attr",
+  "proc-macro-derive",
+]

@@ -1,11 +1,10 @@
 [package]
-name = "proc-macro-derive"
+name = "builder-macro"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-quote = "1.0.37"
-syn = "2.0.77"
+builder-code = { path = "../builder-code" }
 
 [lib]
 proc-macro = true

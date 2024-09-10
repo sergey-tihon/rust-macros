@@ -1,5 +1,6 @@
 use proc_macro_derive::{Hello, UpperName};
 
+mod builder_usage;
 mod compose;
 mod macro_rules;
 mod private;
@@ -28,4 +29,6 @@ fn main() {
     upp.uppercase();
 
     compose::main();
+
+    builder_usage::main();
 }
