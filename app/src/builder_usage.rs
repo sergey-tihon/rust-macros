@@ -23,4 +23,21 @@ mod tests {
 
         assert_eq!(glr.root_of, "mountain".to_string());
     }
+
+    #[test]
+    fn should_generate_builder_for_struct_with_two_properties() {
+        #[derive(Builder)]
+        struct Gleichnis {
+            root_of: String,
+            breath_of_a_fish: u8,
+        }
+
+        let gleipnir = Gleichnis::builder()
+            .root_of("mountains".to_string())
+            .breath_of_a_fish(1)
+            .build();
+
+        assert_eq!(gleipnir.root_of, "mountains".to_string());
+        assert_eq!(gleipnir.breath_of_a_fish, 1);
+    }
 }
