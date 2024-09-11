@@ -1,3 +1,6 @@
+mod fields;
+
+use crate::fields::*;
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use syn::{Data::Struct, DataStruct, DeriveInput, Fields::Named, FieldsNamed};
@@ -15,40 +18,10 @@ pub fn create_builder(item: TokenStream) -> TokenStream {
         _ => unimplemented!("only implemented for structs"),
     };
 
-    let builder_fields = fields.iter().map(|f| {
-        let field_name = &f.ident;
-        let field_type = &f.ty;
-        quote! {
-            #field_name: Option<#field_type>
-        }
-    });
-    let builder_inits = fields.iter().map(|f| {
-        let field_name = &f.ident;
-        quote! {
-            #field_name: None
-        }
-    });
-    let builder_methods = fields.iter().map(|f| {
-        let field_name = &f.ident;
-        let field_type = &f.ty;
-        quote! {
-            pub fn #field_name(&mut self, input: #field_type) -> &mut Self {
-                self.#field_name = Some(input);
-                self
-            }
-        }
-    });
-    let set_fields = fields.iter().map(|f| {
-        let field_name = &f.ident;
-        let field_name_as_string = field_name.as_ref().unwrap().to_string();
-        quote! {
-            #field_name: self.#field_name.as_ref()
-                .expect(
-                    &format!("field {} not set", #field_name_as_string)
-                )
-                .to_string()
-        }
-    });
+    let builder_fields = builder_field_definitions(fields);
+    let builder_inits = builder_init_values(fields);
+    let builder_methods = builder_methods(fields);
+    let set_fields = original_struct_setters(fields);
 
     quote! {
         struct #builder {
@@ -74,7 +47,6 @@ pub fn create_builder(item: TokenStream) -> TokenStream {
         }
     }
 }
-
 #[cfg(test)]
 mod tests {
     use super::*;
