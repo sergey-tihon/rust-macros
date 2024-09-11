@@ -71,7 +71,7 @@ mod tests {
             struct StructWithNoFieldsBuilder {}
 
             impl StructWithNoFieldsBuilder {
-                pub fn build(&self) -> StructWithNoFields {
+                pub fn build(self) -> StructWithNoFields {
                     StructWithNoFields {}
                 }
             }
@@ -99,5 +99,41 @@ mod tests {
         let derived: DeriveInput = syn::parse2(actual).unwrap();
         let name = derived.ident;
         assert_eq!(name.to_string(), "StructWithNoFieldsBuilder");
+    }
+
+    #[test]
+    fn builder_struct_with_fields_should_be_present_in_output() {
+        let input = quote! {
+            struct NumStruct {
+                num: u8,
+            }
+        };
+        let expected = quote! {
+            struct NumStructBuilder {
+                num: Option<u8>,
+            }
+
+            impl NumStructBuilder {
+                pub fn num (mut self , input : u8) -> Self {
+                    self.num = Some(input) ;
+                    self
+                }
+                pub fn build (self) -> NumStruct {
+                    NumStruct {
+                        num : self.num.expect(concat!("field not set: ","num"),),
+                    }
+                }
+            }
+
+            impl NumStruct {
+                pub fn builder () -> NumStructBuilder {
+                    NumStructBuilder { num : None , }
+                }
+            }
+        };
+
+        let actual = create_builder(input);
+
+        assert_eq!(actual.to_string(), expected.to_string());
     }
 }
