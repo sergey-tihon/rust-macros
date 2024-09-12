@@ -2,6 +2,7 @@ use proc_macro_derive::{Hello, UpperName};
 
 mod compose;
 mod macro_rules;
+mod panic_to_result;
 mod private;
 mod public;
 

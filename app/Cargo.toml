@@ -8,4 +8,5 @@ proc-macro-derive = { path = '../proc-macro-derive' }
 proc-macro-attr = { path = '../proc-macro-attr' }
 proc-macro = { path = '../proc-macro' }
 builder-macro = { path = '../builder-macro' }
+panic-to-result-macro = { path = '../panic-to-result-macro' }
 trybuild = "1.0.99"

@@ -1,0 +1,17 @@
+use panic_to_result_macro::panic_to_result;
+
+#[derive(Debug)]
+pub struct Person {
+    name: String,
+    age: u8,
+}
+
+#[panic_to_result]
+fn create_person(name: String, age: u8) -> Person {
+    if age < 18 {
+        panic!();
+    }
+    Ok(Person { name, age })
+}
+
+fn main() {}
