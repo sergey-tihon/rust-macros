@@ -4,12 +4,15 @@ use crate::fields::*;
 use proc_macro2::TokenStream;
 use proc_macro_error::emit_error;
 use quote::{format_ident, quote};
-use syn::{Data::Struct, DataStruct, DeriveInput, Fields::Named, FieldsNamed};
+use syn::{Attribute, Data::Struct, DataStruct, DeriveInput, Fields::Named, FieldsNamed};
+
+const DEFAULTS_ATTRIBUTE_NAME: &str = "builder_defaults";
 
 pub fn create_builder(item: TokenStream) -> TokenStream {
     let ast: DeriveInput = syn::parse2(item).unwrap();
     let name = &ast.ident;
     let builder = format_ident!("{}Builder", name);
+    let use_defaults = use_defaults(&ast.attrs);
 
     let fields = match ast.data {
         Struct(DataStruct {
@@ -31,7 +34,7 @@ pub fn create_builder(item: TokenStream) -> TokenStream {
     let builder_fields = builder_field_definitions(fields);
     let builder_inits = builder_init_values(fields);
     let builder_methods = builder_methods(fields);
-    let set_fields = original_struct_setters(fields);
+    let set_fields = original_struct_setters(fields, use_defaults);
 
     quote! {
         struct #builder {
@@ -57,6 +60,13 @@ pub fn create_builder(item: TokenStream) -> TokenStream {
         }
     }
 }
+
+fn use_defaults(attrs: &[Attribute]) -> bool {
+    attrs
+        .iter()
+        .any(|a| a.path().is_ident(DEFAULTS_ATTRIBUTE_NAME))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -130,7 +140,7 @@ mod tests {
                 }
                 pub fn build (self) -> NumStruct {
                     NumStruct {
-                        num : self.num.expect(concat!("field not set: ","num"),),
+                        num : self.num.expect(concat!("field not set: ","num")),
                     }
                 }
             }

@@ -119,4 +119,19 @@ mod tests {
 
         assert_eq!(gleipnir.root_of, "mountains".to_string());
     }
+
+    #[test]
+    fn should_use_defaults_when_attribute_is_present() {
+        #[derive(Builder)]
+        #[builder_defaults]
+        struct ExampleStruct {
+            string_value: String,
+            int_value: i32,
+        }
+
+        let example = ExampleStruct::builder().build();
+
+        assert_eq!(example.string_value, String::default());
+        assert_eq!(example.int_value, Default::default());
+    }
 }

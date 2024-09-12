@@ -7,18 +7,34 @@ use syn::{
 
 pub fn original_struct_setters(
     fields: &Punctuated<Field, Comma>,
+    use_defaults: bool,
 ) -> impl Iterator<Item = TokenStream> + '_ {
-    fields.iter().map(|f| {
+    fields.iter().map(move |f| {
         let (field_name, _) = get_name_and_type(f);
         let field_name_as_string = field_name.as_ref().unwrap().to_string();
 
+        let handle_type = if use_defaults {
+            default_fallback()
+        } else {
+            panic_fallback(field_name_as_string)
+        };
+
         quote! {
-            #field_name: self.#field_name
-                .expect(
-                    concat!("field not set: ", #field_name_as_string),
-                )
+            #field_name: self.#field_name.#handle_type
         }
     })
+}
+
+fn panic_fallback(field_name_as_string: String) -> TokenStream {
+    quote! {
+        expect(concat!("field not set: ", #field_name_as_string))
+    }
+}
+
+fn default_fallback() -> TokenStream {
+    quote! {
+        unwrap_or_default()
+    }
 }
 
 pub fn builder_methods(
