@@ -1,7 +1,7 @@
+use proc_macro::TokenStream;
+
 mod compose;
 mod private;
-
-use proc_macro::TokenStream;
 
 #[proc_macro]
 pub fn private(item: TokenStream) -> TokenStream {

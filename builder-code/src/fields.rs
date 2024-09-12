@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{punctuated::Punctuated, token::Comma, Field, Ident, Type};
+use syn::{punctuated::Punctuated, token::Comma, Field, Ident, LitStr, Meta, Type};
 
 pub fn original_struct_setters(
     fields: &Punctuated<Field, Comma>,
@@ -23,13 +23,33 @@ pub fn builder_methods(
 ) -> impl Iterator<Item = TokenStream> + '_ {
     fields.iter().map(|f| {
         let (field_name, field_type) = get_name_and_type(f);
+        let attr = extract_attribure_from_field(f, "rename")
+            .map(|a| &a.meta)
+            .map(|m| match m {
+                Meta::List(nested) => {
+                    let a: LitStr = nested.parse_args().unwrap();
+                    Ident::new(&a.value(), a.span())
+                }
+                Meta::Path(_) => {
+                    panic!("expected brackets with name of prop")
+                }
+                Meta::NameValue(_) => {
+                    panic!("didnot expect name + value")
+                }
+            });
+        let method_name = attr.unwrap_or(field_name.clone().unwrap());
+
         quote! {
-            pub fn #field_name(mut self, input: #field_type) -> Self {
+            pub fn #method_name(mut self, input: #field_type) -> Self {
                 self.#field_name = Some(input);
                 self
             }
         }
     })
+}
+
+fn extract_attribure_from_field<'a>(f: &'a Field, name: &'a str) -> Option<&'a syn::Attribute> {
+    f.attrs.iter().find(|&a| a.path().is_ident(name))
 }
 
 pub fn builder_init_values(

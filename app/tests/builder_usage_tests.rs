@@ -71,4 +71,19 @@ mod tests {
 
         Gleichnir::builder().build();
     }
+
+    #[test]
+    fn should_generate_builder_for_struct_with_one_renamed_property() {
+        #[derive(Builder)]
+        struct Gleichnis {
+            #[rename("tops_of")]
+            root_of: String,
+        }
+
+        let gleipnir = Gleichnis::builder()
+            .tops_of("mountains".to_string())
+            .build();
+
+        assert_eq!(gleipnir.root_of, "mountains".to_string());
+    }
 }
