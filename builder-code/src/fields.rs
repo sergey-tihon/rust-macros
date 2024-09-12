@@ -1,6 +1,9 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{punctuated::Punctuated, token::Comma, Field, Ident, LitStr, Meta, Type};
+use syn::{
+    punctuated::Punctuated, token::Comma, Expr, ExprLit, Field, Ident, Lit, LitStr, Meta,
+    MetaNameValue, Type,
+};
 
 pub fn original_struct_setters(
     fields: &Punctuated<Field, Comma>,
@@ -33,9 +36,17 @@ pub fn builder_methods(
                 Meta::Path(_) => {
                     panic!("expected brackets with name of prop")
                 }
-                Meta::NameValue(_) => {
-                    panic!("didnot expect name + value")
-                }
+                Meta::NameValue(meta) => match meta {
+                    MetaNameValue {
+                        value:
+                            Expr::Lit(ExprLit {
+                                lit: Lit::Str(lit_str),
+                                ..
+                            }),
+                        ..
+                    } => Ident::new(&lit_str.value(), lit_str.span()),
+                    _ => panic!("expected string literal"),
+                },
             });
         let method_name = attr.unwrap_or(field_name.clone().unwrap());
 
