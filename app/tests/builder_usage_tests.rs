@@ -1,69 +1,74 @@
-use builder_macro::Builder;
+pub fn main() {}
 
-#[test]
-fn should_generate_builder_for_struct_with_no_properties() {
-    #[derive(Builder)]
-    struct ExampleStructNoFields {}
+#[cfg(test)]
+mod tests {
+    use builder_macro::Builder;
 
-    let _: ExampleStructNoFields = ExampleStructNoFields::builder().build();
-}
+    #[test]
+    fn should_generate_builder_for_struct_with_no_properties() {
+        #[derive(Builder)]
+        struct ExampleStructNoFields {}
 
-#[test]
-fn should_generate_builder_for_struct_with_single_property() {
-    #[derive(Builder)]
-    struct Gleipnir {
-        root_of: String,
+        let _: ExampleStructNoFields = ExampleStructNoFields::builder().build();
     }
 
-    let glr = Gleipnir::builder().root_of("mountain".to_string()).build();
+    #[test]
+    fn should_generate_builder_for_struct_with_single_property() {
+        #[derive(Builder)]
+        struct Gleipnir {
+            root_of: String,
+        }
 
-    assert_eq!(glr.root_of, "mountain".to_string());
-}
+        let glr = Gleipnir::builder().root_of("mountain".to_string()).build();
 
-#[test]
-fn should_generate_builder_for_struct_with_two_properties() {
-    #[derive(Builder)]
-    struct Gleichnis {
-        root_of: String,
-        breath_of_a_fish: u8,
+        assert_eq!(glr.root_of, "mountain".to_string());
     }
 
-    let gleipnir = Gleichnis::builder()
-        .root_of("mountains".to_string())
-        .breath_of_a_fish(1)
-        .build();
+    #[test]
+    fn should_generate_builder_for_struct_with_two_properties() {
+        #[derive(Builder)]
+        struct Gleichnis {
+            root_of: String,
+            breath_of_a_fish: u8,
+        }
 
-    assert_eq!(gleipnir.root_of, "mountains".to_string());
-    assert_eq!(gleipnir.breath_of_a_fish, 1);
-}
+        let gleipnir = Gleichnis::builder()
+            .root_of("mountains".to_string())
+            .breath_of_a_fish(1)
+            .build();
 
-#[test]
-fn should_generate_builder_for_struct_with_multiple_properties() {
-    #[derive(Builder)]
-    struct Gleichnis {
-        root_of: String,
-        breath_of_a_fish: u8,
-        other_neccessaries: Vec<String>,
+        assert_eq!(gleipnir.root_of, "mountains".to_string());
+        assert_eq!(gleipnir.breath_of_a_fish, 1);
     }
 
-    let gleipnir = Gleichnis::builder()
-        .root_of("mountains".to_string())
-        .breath_of_a_fish(1)
-        .other_neccessaries(vec!["water".to_string(), "fire".to_string()])
-        .build();
+    #[test]
+    fn should_generate_builder_for_struct_with_multiple_properties() {
+        #[derive(Builder)]
+        struct Gleichnis {
+            root_of: String,
+            breath_of_a_fish: u8,
+            other_neccessaries: Vec<String>,
+        }
 
-    assert_eq!(gleipnir.root_of, "mountains".to_string());
-    assert_eq!(gleipnir.breath_of_a_fish, 1);
-    assert_eq!(gleipnir.other_neccessaries.len(), 2);
-}
+        let gleipnir = Gleichnis::builder()
+            .root_of("mountains".to_string())
+            .breath_of_a_fish(1)
+            .other_neccessaries(vec!["water".to_string(), "fire".to_string()])
+            .build();
 
-#[should_panic]
-#[test]
-fn should_panic_when_field_is_missing() {
-    #[derive(Builder)]
-    struct Gleichnir {
-        _roots_of: String,
+        assert_eq!(gleipnir.root_of, "mountains".to_string());
+        assert_eq!(gleipnir.breath_of_a_fish, 1);
+        assert_eq!(gleipnir.other_neccessaries.len(), 2);
     }
 
-    Gleichnir::builder().build();
+    #[should_panic]
+    #[test]
+    fn should_panic_when_field_is_missing() {
+        #[derive(Builder)]
+        struct Gleichnir {
+            _roots_of: String,
+        }
+
+        Gleichnir::builder().build();
+    }
 }

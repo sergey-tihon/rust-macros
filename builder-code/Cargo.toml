@@ -7,3 +7,4 @@ edition = "2021"
 quote = "1.0.37"
 syn = { version = "2.0.77", features = ["extra-traits"] }
 proc-macro2 = "1.0.86"
+proc-macro-error = "1.0.4"

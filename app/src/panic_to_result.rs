@@ -1,5 +1,6 @@
 use panic_to_result_macro::panic_to_result;
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct Person {
     name: String,
@@ -13,8 +14,6 @@ fn create_person(name: String, age: u8) -> Person {
     }
     Person { name, age }
 }
-
-fn main() {}
 
 #[cfg(test)]
 mod tests {

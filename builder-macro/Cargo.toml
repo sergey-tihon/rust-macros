@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 builder-code = { path = "../builder-code" }
+proc-macro-error = "1.0.4"
 
 [lib]
 proc-macro = true

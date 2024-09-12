@@ -34,7 +34,7 @@ impl ToTokens for ComposeInput {
 }
 
 pub fn main(item: TokenStream) -> TokenStream {
-    eprintln!("{:#?}", item);
+    // eprintln!("{:#?}", item);
     let ci: ComposeInput = syn::parse_macro_input!(item);
 
     quote! {

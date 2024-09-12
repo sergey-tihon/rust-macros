@@ -2,12 +2,13 @@ mod fields;
 
 use crate::fields::*;
 use proc_macro2::TokenStream;
+use proc_macro_error::emit_error;
 use quote::{format_ident, quote};
 use syn::{Data::Struct, DataStruct, DeriveInput, Fields::Named, FieldsNamed};
 
 pub fn create_builder(item: TokenStream) -> TokenStream {
     let ast: DeriveInput = syn::parse2(item).unwrap();
-    let name = ast.ident;
+    let name = &ast.ident;
     let builder = format_ident!("{}Builder", name);
 
     let fields = match ast.data {
@@ -15,7 +16,16 @@ pub fn create_builder(item: TokenStream) -> TokenStream {
             fields: Named(FieldsNamed { ref named, .. }),
             ..
         }) => named,
-        _ => unimplemented!("only implemented for structs"),
+        _ => {
+            emit_error!(
+                ast,
+                format!(
+                    "only structs with named fields are supported. Struct: {}",
+                    quote!(#name)
+                )
+            );
+            return quote! {};
+        }
     };
 
     let builder_fields = builder_field_definitions(fields);

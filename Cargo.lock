@@ -18,6 +18,7 @@ dependencies = [
 name = "builder-code"
 version = "0.1.0"
 dependencies = [
+ "proc-macro-error",
  "proc-macro2",
  "quote",
  "syn 2.0.77",
@@ -28,6 +29,7 @@ name = "builder-macro"
 version = "0.1.0"
 dependencies = [
  "builder-code",
+ "proc-macro-error",
 ]
 
 [[package]]

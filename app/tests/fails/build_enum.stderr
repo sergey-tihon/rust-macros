@@ -1,7 +1,5 @@
-error: proc-macro derive panicked
- --> tests/fails/build_enum.rs:3:10
+error: only structs with named fields are supported. Struct: ExampleEnum
+ --> tests/fails/build_enum.rs:4:1
   |
-3 | #[derive(Builder)]
-  |          ^^^^^^^
-  |
-  = help: message: not implemented: only implemented for structs
+4 | pub enum ExampleEnum {}
+  | ^^^^^^^^^^^^^^^^^^^^^^^
