@@ -48,7 +48,7 @@ pub fn builder_methods(
                     _ => panic!("expected string literal"),
                 },
             });
-        let method_name = attr.unwrap_or(field_name.clone().unwrap());
+        let method_name = attr.unwrap_or_else(|| field_name.clone().unwrap());
 
         quote! {
             pub fn #method_name(mut self, input: #field_type) -> Self {
