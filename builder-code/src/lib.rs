@@ -36,6 +36,12 @@ pub fn create_builder(item: TokenStream) -> TokenStream {
     let builder_methods = builder_methods(fields);
     let set_fields = original_struct_setters(fields, use_defaults);
 
+    let default_assertions = if use_defaults {
+        optional_default_asserts(fields)
+    } else {
+        vec![]
+    };
+
     quote! {
         struct #builder {
             #(#builder_fields,)*
@@ -58,6 +64,8 @@ pub fn create_builder(item: TokenStream) -> TokenStream {
                 }
             }
         }
+
+        #(#default_assertions)*
     }
 }
 

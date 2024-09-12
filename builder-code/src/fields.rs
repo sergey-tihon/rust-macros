@@ -1,9 +1,24 @@
 use proc_macro2::TokenStream;
-use quote::quote;
+use quote::{format_ident, quote, quote_spanned};
 use syn::{
-    punctuated::Punctuated, token::Comma, Expr, ExprLit, Field, Ident, Lit, LitStr, Meta,
-    MetaNameValue, Type,
+    punctuated::Punctuated, spanned::Spanned, token::Comma, Expr, ExprLit, Field, Ident, Lit,
+    LitStr, Meta, MetaNameValue, Type,
 };
+
+pub fn optional_default_asserts(fields: &Punctuated<Field, Comma>) -> Vec<TokenStream> {
+    fields
+        .iter()
+        .map(|f| {
+            let ty = &f.ty;
+            let ty_name = quote!(#ty).to_string();
+            let assertion_ident = format_ident!("__{}DefaultAssertion", ty_name);
+
+            quote_spanned! {ty.span() =>
+                struct #assertion_ident where #ty: core::default::Default;
+            }
+        })
+        .collect()
+}
 
 pub fn original_struct_setters(
     fields: &Punctuated<Field, Comma>,
