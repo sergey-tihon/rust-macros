@@ -61,16 +61,16 @@ mod tests {
         assert_eq!(gleipnir.other_neccessaries.len(), 2);
     }
 
-    #[should_panic]
-    #[test]
-    fn should_panic_when_field_is_missing() {
-        #[derive(Builder)]
-        struct Gleichnir {
-            _roots_of: String,
-        }
-
-        Gleichnir::builder().build();
-    }
+    // #[should_panic]
+    // #[test]
+    // fn should_panic_when_field_is_missing() {
+    //     #[derive(Builder)]
+    //     struct Gleichnir {
+    //         _roots_of: String,
+    //     }
+    //
+    //     Gleichnir::builder().build();
+    // }
 
     #[test]
     fn should_generate_builder_for_struct_with_one_renamed_property() {
@@ -133,5 +133,23 @@ mod tests {
 
         assert_eq!(example.string_value, String::default());
         assert_eq!(example.int_value, Default::default());
+    }
+
+    #[test]
+    fn should_work_with_correct_order() {
+        #[derive(Builder)]
+        struct Gleichnis {
+            roots_of: String,
+            breath_of_a_fish: u8,
+            anything_else: bool,
+        }
+
+        let gleipnir = Gleichnis::builder()
+            .roots_of("mountains".to_string())
+            .breath_of_a_fish(1)
+            .anything_else(true)
+            .build();
+
+        assert_eq!(gleipnir.roots_of, "mountains".to_string());
     }
 }

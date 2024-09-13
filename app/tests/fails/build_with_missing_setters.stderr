@@ -1,0 +1,17 @@
+error[E0599]: no method named `build` found for struct `GleipnirBuilder<__AnythingElseOfGleipnirBuilder>` in the current scope
+  --> tests/fails/build_with_missing_setters.rs:14:10
+   |
+3  |   #[derive(Builder)]
+   |            ------- method `build` not found for this struct
+...
+10 | /     Gleipnir::builder()
+11 | |         .roots_of("mountains".to_string())
+12 | |         .breath_of_a_fish(1)
+13 | |         // missing final property
+14 | |         .build();
+   | |         -^^^^^ method not found in `GleipnirBuilder<__AnythingElseOfGleipnirBuilder>`
+   | |_________|
+   |
+   |
+   = note: the method was found for
+           - `GleipnirBuilder<FinalBuilder>`

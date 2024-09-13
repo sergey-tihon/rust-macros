@@ -1,9 +1,10 @@
 mod fields;
+mod util;
 
 use crate::fields::*;
 use proc_macro2::TokenStream;
 use proc_macro_error::emit_error;
-use quote::{format_ident, quote};
+use quote::quote;
 use syn::{Attribute, Data::Struct, DataStruct, DeriveInput, Fields::Named, FieldsNamed};
 
 const DEFAULTS_ATTRIBUTE_NAME: &str = "builder_defaults";
@@ -11,8 +12,6 @@ const DEFAULTS_ATTRIBUTE_NAME: &str = "builder_defaults";
 pub fn create_builder(item: TokenStream) -> TokenStream {
     let ast: DeriveInput = syn::parse2(item).unwrap();
     let name = &ast.ident;
-    let builder = format_ident!("{}Builder", name);
-    let use_defaults = use_defaults(&ast.attrs);
 
     let fields = match ast.data {
         Struct(DataStruct {
@@ -31,10 +30,11 @@ pub fn create_builder(item: TokenStream) -> TokenStream {
         }
     };
 
-    let builder_fields = builder_field_definitions(fields);
-    let builder_inits = builder_init_values(fields);
-    let builder_methods = builder_methods(fields);
-    let set_fields = original_struct_setters(fields, use_defaults);
+    let use_defaults = use_defaults(&ast.attrs);
+    let builder = builder_definition(name, fields);
+    let builder_methods_for_struct = builder_impl_for_struct(name, fields);
+    let marker_and_structs = marker_trait_and_structs(name, fields);
+    let builder_methods = builder_methods(name, fields, use_defaults);
 
     let default_assertions = if use_defaults {
         optional_default_asserts(fields)
@@ -43,28 +43,10 @@ pub fn create_builder(item: TokenStream) -> TokenStream {
     };
 
     quote! {
-        struct #builder {
-            #(#builder_fields,)*
-        }
-
-        impl #builder {
-            #(#builder_methods)*
-
-            pub fn build(self) -> #name {
-                #name {
-                    #(#set_fields,)*
-                }
-            }
-        }
-
-        impl #name {
-            pub fn builder() -> #builder {
-                #builder {
-                    #(#builder_inits,)*
-                }
-            }
-        }
-
+        #builder
+        #builder_methods_for_struct
+        #marker_and_structs
+        #builder_methods
         #(#default_assertions)*
     }
 }
@@ -96,17 +78,22 @@ mod tests {
             struct StructWithNoFields {}
         };
         let expected = quote! {
-            struct StructWithNoFieldsBuilder {}
-
-            impl StructWithNoFieldsBuilder {
-                pub fn build(self) -> StructWithNoFields {
-                    StructWithNoFields {}
+            pub struct StructWithNoFieldsBuilder <T: MarkerTraitForBuilder > {
+                marker : core::marker::PhantomData <T>,
+            }
+            impl StructWithNoFields {
+                pub fn builder () -> StructWithNoFieldsBuilder<FinalBuilder> {
+                    StructWithNoFieldsBuilder {
+                        marker: Default::default(),
+                    }
                 }
             }
-
-            impl StructWithNoFields {
-                pub fn builder() -> StructWithNoFieldsBuilder {
-                    StructWithNoFieldsBuilder {}
+            pub trait MarkerTraitForBuilder { }
+            pub struct FinalBuilder { }
+            impl MarkerTraitForBuilder for FinalBuilder { }
+            impl StructWithNoFieldsBuilder<FinalBuilder> {
+                pub fn build (self) -> StructWithNoFields {
+                    StructWithNoFields { }
                 }
             }
         };
@@ -137,25 +124,38 @@ mod tests {
             }
         };
         let expected = quote! {
-            struct NumStructBuilder {
-                num: Option<u8>,
+            pub struct NumStructBuilder <T: MarkerTraitForBuilder> {
+                marker: core::marker::PhantomData<T>,
+                num : Option <u8>,
             }
-
-            impl NumStructBuilder {
-                pub fn num (mut self , input : u8) -> Self {
-                    self.num = Some(input) ;
-                    self
-                }
-                pub fn build (self) -> NumStruct {
-                    NumStruct {
-                        num : self.num.expect(concat!("field not set: ","num")),
+            impl NumStruct {
+                pub fn builder () -> NumStructBuilder<__NumOfNumStructBuilder> {
+                    NumStructBuilder {
+                        marker: Default::default(),
+                        num:  None,
                     }
                 }
             }
+            pub trait MarkerTraitForBuilder { }
+            pub struct __NumOfNumStructBuilder { }
+            impl MarkerTraitForBuilder for __NumOfNumStructBuilder { }
+            pub struct FinalBuilder { }
+            impl MarkerTraitForBuilder for FinalBuilder { }
 
-            impl NumStruct {
-                pub fn builder () -> NumStructBuilder {
-                    NumStructBuilder { num : None , }
+            impl NumStructBuilder <__NumOfNumStructBuilder> {
+                pub fn num (mut self , input : u8) -> NumStructBuilder<FinalBuilder> {
+                    self.num = Some(input) ;
+                    NumStructBuilder {
+                        marker: Default::default () ,
+                        num: self.num,
+                    }
+                }
+            }
+            impl NumStructBuilder<FinalBuilder> {
+                pub fn build (self) -> NumStruct {
+                    NumStruct {
+                        num : self.num.expect(concat!("field not set: " , "num")),
+                    }
                 }
             }
         };
