@@ -3,7 +3,7 @@ resolver = "2"
 members = [
   "app",
   "builder-code",
-  "builder-macro", "panic-to-result-macro",
+  "builder-macro", "config-macro", "panic-to-result-macro",
   "proc-macro",
   "proc-macro-attr",
   "proc-macro-derive",

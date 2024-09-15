@@ -9,4 +9,7 @@ proc-macro-attr = { path = '../proc-macro-attr' }
 proc-macro = { path = '../proc-macro' }
 builder-macro = { path = '../builder-macro' }
 panic-to-result-macro = { path = '../panic-to-result-macro' }
+config-macro = { path = '../config-macro', features = [
+  "struct",
+], default-features = false }
 trybuild = "1.0.99"
